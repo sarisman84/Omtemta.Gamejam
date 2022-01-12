@@ -1,24 +1,49 @@
 #include "stdafx.h"
 #include "EntityType.h"
 
-EntityType::EntityType(const char* aTexture, CollisionEvent anCollisionEvent, UpdateEvent anUpdateEvent)
+EntityType::EntityType(const char* aTexture, CollisionEvent anCollisionEvent) : EntityType(aTexture, "", anCollisionEvent, nullptr)
 {
-    myOnCollisionEvent = anCollisionEvent;
-    myUpdateEvent = anUpdateEvent;
-    myTexture = aTexture;
 }
 
-std::function<void(Entity*)>& EntityType::OnCollisionEvent()
+EntityType::EntityType(const char* aTexture, CollisionEvent anCollisionEvent, UpdateEvent anUpdateEvent) : EntityType(aTexture, "", anCollisionEvent, anUpdateEvent)
 {
-    return myOnCollisionEvent;
+
+}
+
+EntityType::EntityType(const char* aTexture, const char* aTag, CollisionEvent anCollisionEvent) : EntityType(aTexture, aTag, anCollisionEvent, nullptr)
+{
+
+}
+
+
+
+EntityType::EntityType(const char* aTexture, const char* aTag, CollisionEvent anCollisionEvent, UpdateEvent anUpdateEvent)
+{
+
+	myOnCollisionEvent = anCollisionEvent;
+	myUpdateEvent = anUpdateEvent;
+	myTexture = aTexture;
+	myTag = aTag;
+}
+
+CollisionEvent& EntityType::OnCollisionEvent()
+{
+	return myOnCollisionEvent;
 }
 
 UpdateEvent& EntityType::OnUpdate()
 {
-    return myUpdateEvent;
+	return myUpdateEvent;
 }
+
+
 
 const char* EntityType::GetTexturePath() const
 {
-    return myTexture;
+	return myTexture;
+}
+
+const char* EntityType::GetTag() const
+{
+	return myTag;
 }

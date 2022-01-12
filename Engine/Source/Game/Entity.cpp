@@ -2,6 +2,7 @@
 #include "Entity.h"
 #include <tga2d/texture/texture_manager.h>
 #include "Debugger.h"
+#include "VectorUtilities.h"
 
 Entity::Entity(EntityType* aType)
 {
@@ -22,16 +23,16 @@ const EntityType* Entity::GetType() const
 	return myType;
 }
 
-void Entity::CheckCollision(Entity* someOtherEntity)
+void Entity::CheckCollision(CGameWorld* aWorld, Entity* someOtherEntity)
 {
 	//AABB impl
-	bool hasCollided = false;
+	bool hasCollided = AABBCheck(someOtherEntity);
 
 	if (hasCollided)
 	{
 		CollisionEvent colEvent = myType->OnCollisionEvent();
 		if (colEvent)
-			colEvent(someOtherEntity);
+			colEvent(aWorld, this, someOtherEntity);
 	}
 
 }
@@ -40,7 +41,7 @@ void Entity::UpdateEntity(CGameWorld* aWorld)
 {
 	UpdateEvent updateEvent = myType->OnUpdate();
 	if (updateEvent)
-		updateEvent(aWorld,this);
+		updateEvent(aWorld, this);
 }
 
 void Entity::Render(Tga2D::CSpriteDrawer* aDrawer)
@@ -51,23 +52,58 @@ void Entity::Render(Tga2D::CSpriteDrawer* aDrawer)
 		return;
 	}
 
+	myTransform.myPosition = Convert::ToTga(PixelToAbsValue(myPosition));
+	myTransform.mySize = Convert::ToTga(PixelToAbsValue(mySize));
+
 	aDrawer->Draw(myMaterial, myTransform);
 }
 
-SpriteTransform& Entity::Transform()
+Vector2Pixel& Entity::GetPosition()
 {
-	return myTransform;
+	return myPosition;
 }
 
-SpriteMaterial& Entity::Material()
+Vector2Pixel& Entity::GetSize()
 {
-	return myMaterial;
+	return mySize;
+}
+
+Entity* Entity::SetPosition(Vector2Pixel aPosition)
+{
+	myPosition = aPosition;
+	return this;
+}
+
+Entity* Entity::SetSize(Vector2Pixel aSize)
+{
+	mySize = aSize;
+	return this;
+}
+
+
+
+const bool Entity::IsOfTag(const char* aTag)
+{
+	return myType->GetTag() == aTag;
+}
+
+
+
+const bool Entity::AABBCheck(Entity* someOtherEntity)
+{
+	bool hasCollidedX = myPosition.x <= someOtherEntity->myPosition.x + someOtherEntity->mySize.x &&
+		myPosition.x + mySize.x >= someOtherEntity->myPosition.x;
+
+	bool hasCollidedY = myPosition.y <= someOtherEntity->myPosition.y + someOtherEntity->mySize.y &&
+		myPosition.y + mySize.y >= someOtherEntity->myPosition.y;
+
+	return hasCollidedX && hasCollidedY;
 }
 
 Vector2Abs Entity::PixelToAbsValue(Vector2Pixel aPixelValue)
 {
 	Tga2D::Vector2ui res = Tga2D::CEngine::GetInstance()->GetTargetSize();
-	float x = static_cast<float>(aPixelValue.x / res.x);
-	float y = static_cast<float>(aPixelValue.y / res.y);
+	float x = ((float)aPixelValue.x / (float)res.x);
+	float y = ((float)aPixelValue.y / (float)res.y);
 	return Vector2Abs(x, y);
 }

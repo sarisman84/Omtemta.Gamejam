@@ -12,7 +12,7 @@ EntityManager::~EntityManager()
 	}
 	myCurrentEntities.Clear();
 }
-EntityManager::EntityManager(CGameWorld* aWorld)
+EntityManager::EntityManager(CGameWorld* aWorld, std::function<void(EntityManager*)> aUpdateEvent)
 {
 	myWorld = aWorld;
 	myDrawer = &Tga2D::CEngine::GetInstance()->GetDirect3D().GetSpriteDrawer();
@@ -26,12 +26,15 @@ EntityManager::EntityManager(CGameWorld* aWorld)
 				if (curRate >= refreshRate)
 				{
 					//std::cout << "Updated Called!" << std::endl;
- 					UpdateEntities();
+					UpdateEntities();
+
 					curRate = 0;
 				}
-				
+
 			}
 		});
+
+	myUpdateEvent = aUpdateEvent;
 }
 
 void EntityManager::AddEntity(Entity* anEntityToAdd)
@@ -41,6 +44,14 @@ void EntityManager::AddEntity(Entity* anEntityToAdd)
 		if (entity == anEntityToAdd) return;
 	}
 	myCurrentEntities.Add(anEntityToAdd);
+}
+
+void EntityManager::AddEntities(List<Entity*> aNewSetOfEntities)
+{
+	for (auto& newEntity : aNewSetOfEntities)
+	{
+		AddEntity(newEntity);
+	}
 }
 
 void EntityManager::RemoveEntity(Entity* anEntityToRemove)
@@ -59,11 +70,17 @@ void EntityManager::RemoveEntity(Entity* anEntityToRemove)
 void EntityManager::UpdateEntities()
 {
 	if (!myUpdateFlag) return;
-	for (auto& entity : myCurrentEntities)
+	for (int i = 0; i < myCurrentEntities.Count(); i++)
 	{
+		if (i >= myCurrentEntities.Count()) return;
+
+		Entity* entity = myCurrentEntities[i];
+
 		if (!myUpdateFlag) return;
 		if (!entity) continue;
+
 		entity->UpdateEntity(myWorld);
+		CheckCollisions(entity);
 	}
 }
 
@@ -71,8 +88,10 @@ void EntityManager::RenderEntities()
 {
 	myUpdateFlag = false;
 
-	for (auto& entity : myCurrentEntities)
+	for (int i = 0; i < myCurrentEntities.Count(); i++)
 	{
+		if (i >= myCurrentEntities.Count()) return;
+		Entity* entity = myCurrentEntities[i];
 
 		if (!entity) continue;
 		entity->Render(myDrawer);
@@ -80,13 +99,29 @@ void EntityManager::RenderEntities()
 	myUpdateFlag = true;
 }
 
-void EntityManager::CheckCollisions(Entity* anEntityToCheck)
+Entity* EntityManager::GetEntityWithTag(const char* aTag)
 {
 	for (auto& entity : myCurrentEntities)
 	{
+		if (!myUpdateFlag) return nullptr;
+		if (!entity) continue;
+
+		if (entity->IsOfTag(aTag)) return entity;
+	}
+	return nullptr;
+}
+
+void EntityManager::CheckCollisions(Entity* anEntityToCheck)
+{
+	for (int i = 0; i < myCurrentEntities.Count(); i++)
+	{
+		if (i >= myCurrentEntities.Count()) return;
+
+		Entity* entity = myCurrentEntities[i];
+
 		if (!myUpdateFlag) return;
-		if (!entity || entity == anEntityToCheck || Vector2<float>::Distance(Convert::ToCustom(anEntityToCheck->Transform().myPosition), Convert::ToCustom(entity->Transform().myPosition)) > 0.25f) continue;
-		anEntityToCheck->CheckCollision(entity);
+		if (!entity || entity == anEntityToCheck) continue;
+		anEntityToCheck->CheckCollision(myWorld, entity);
 
 	}
 }

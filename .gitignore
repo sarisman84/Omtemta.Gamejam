@@ -430,3 +430,7 @@ Engine/Lib/Game_Debug.pdb
 Engine/Lib/tga2dcore_Debug.idb
 
 Engine/Lib/tga2dcore_Debug.pdb
+
+Scuffed pong game/
+
+*.pdb
