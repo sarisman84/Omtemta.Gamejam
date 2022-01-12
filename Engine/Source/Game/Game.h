@@ -2,6 +2,8 @@
 #include <fstream>
 #include "GameWorld.h"
 
+
+
 class CGame
 {
 public:
@@ -14,5 +16,7 @@ private:
 	LRESULT WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 	CGameWorld myGameWorld;
+	CommonUtilities::Input myInputManager;
+	CommonUtilities::Timer myTimerManager;
 
 };

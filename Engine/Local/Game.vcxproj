@@ -154,13 +154,24 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Source\Game\Debugger.h" />
+    <ClInclude Include="..\Source\Game\Entity.h" />
+    <ClInclude Include="..\Source\Game\EntityBehaviours.h" />
+    <ClInclude Include="..\Source\Game\EntityFactory.h" />
+    <ClInclude Include="..\Source\Game\EntityManager.h" />
+    <ClInclude Include="..\Source\Game\EntityType.h" />
     <ClInclude Include="..\Source\Game\Game.h" />
     <ClInclude Include="..\Source\Game\GameWorld.h" />
     <ClInclude Include="..\Source\Game\resource.h" />
     <ClInclude Include="..\Source\Game\stdafx.h" />
     <ClInclude Include="..\Source\Game\targetver.h" />
+    <ClInclude Include="..\Source\Game\VectorUtilities.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Source\Game\Entity.cpp" />
+    <ClCompile Include="..\Source\Game\EntityFactory.cpp" />
+    <ClCompile Include="..\Source\Game\EntityManager.cpp" />
+    <ClCompile Include="..\Source\Game\EntityType.cpp" />
     <ClCompile Include="..\Source\Game\Game.cpp" />
     <ClCompile Include="..\Source\Game\GameWorld.cpp" />
     <ClCompile Include="..\Source\Game\stdafx.cpp">

@@ -8,30 +8,51 @@
 #include <tga2d/texture/texture_manager.h>
 
 CGameWorld::CGameWorld()
-{}
+{
+	myManager = nullptr;
+}
 
 CGameWorld::~CGameWorld() 
-{}
+{
+	delete myManager;
+}
 
 void CGameWorld::Init()  
 {
-	myTga2dLogoTexture = Tga2D::CEngine::GetInstance()->GetTextureManager().GetTexture("sprites/tga_logo.dds");
+	myManager = new EntityManager(this);
+	Entity* player = myFactory.CreateEntity(EntityTypeIndex::Player);
+	myManager->AddEntity(player);
+
+	player->Transform().myPosition = { 0.5f, 0.9f };
+	player->Transform().mySize = { 0.1f, 0.025f };
 }
 
 void CGameWorld::Update(float /*aTimeDelta*/)
 { 	
+
 }
 
 void CGameWorld::Render()
 {
-	Tga2D::CSpriteDrawer& spriteDrawer(Tga2D::CEngine::GetInstance()->GetDirect3D().GetSpriteDrawer());
-	Tga2D::SSpriteSharedData sharedData = {};
-	sharedData.myTexture = myTga2dLogoTexture;
+	myManager->RenderEntities();
+}
 
-	// Create instance data. 
-	Tga2D::SSpriteInstanceData spriteInstance = {};
-	spriteInstance.myPivot = { 0.5f, 0.5f };
-	spriteInstance.myPosition = { 0.5f, 0.5f };
+CommonUtilities::Input* CGameWorld::GetUserInput()
+{
+	return myUserInput;
+}
 
-	spriteDrawer.Draw(sharedData, spriteInstance);
+CommonUtilities::Timer* CGameWorld::GetTimeManager()
+{
+	return myTimeManager;
+}
+
+void CGameWorld::SetUserInput(CommonUtilities::Input* anInputManager)
+{
+	myUserInput = anInputManager;
+}
+
+void CGameWorld::SetTimeManager(CommonUtilities::Timer* anTimeManager)
+{
+	myTimeManager = anTimeManager;
 }

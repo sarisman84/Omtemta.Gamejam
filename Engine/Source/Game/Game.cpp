@@ -24,6 +24,13 @@ std::wstring BUILD_NAME = L"Retail";
 
 CGame::CGame()
 {
+	myTimerManager;
+	myTimerManager.StartTimer(120);
+
+	myInputManager;
+
+	myGameWorld.SetTimeManager(&myTimerManager);
+	myGameWorld.SetUserInput(&myInputManager);
 }
 
 
@@ -36,15 +43,18 @@ LRESULT CGame::WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	lParam;
 	wParam;
 	hWnd;
+
+	myInputManager.UpdateEvents(message, wParam, lParam);
+	//std::cout << message << std::endl;
 	switch (message)
 	{
 		// this message is read when the window is closed
-	case WM_DESTROY:
-	{
-		// close the application entirely
-		PostQuitMessage(0);
-		return 0;
-	}
+		case WM_DESTROY:
+			{
+				// close the application entirely
+				PostQuitMessage(0);
+				return 0;
+			}
 	}
 
 	return 0;
@@ -53,11 +63,13 @@ LRESULT CGame::WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 bool CGame::Init(const std::wstring& aVersion, HWND /*aHWND*/)
 {
+
+
 	Tga2D::SEngineCreateParameters createParameters;
 
-	createParameters.myInitFunctionToCall = [this] {InitCallBack(); };
-	createParameters.myWinProcCallback = [this](HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {return WinProc(hWnd, message, wParam, lParam); };
-	createParameters.myUpdateFunctionToCall = [this] {UpdateCallBack(); };
+	createParameters.myInitFunctionToCall = [this] { InitCallBack(); };
+	createParameters.myWinProcCallback = [this](HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) { return WinProc(hWnd, message, wParam, lParam); };
+	createParameters.myUpdateFunctionToCall = [this] { UpdateCallBack(); };
 	createParameters.myApplicationName = L"TGA 2D " + BUILD_NAME + L"[" + aVersion + L"] ";
 	//createParameters.myPreferedMultiSamplingQuality = Tga2D::EMultiSamplingQuality::High;
 	createParameters.myActivateDebugSystems = Tga2D::EDebugFeature::Fps |
@@ -85,7 +97,7 @@ void CGame::InitCallBack()
 
 void CGame::UpdateCallBack()
 {
-	myGameWorld.Update(Tga2D::CEngine::GetInstance()->GetDeltaTime());
+
 	myGameWorld.Render();
 
 }

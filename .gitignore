@@ -422,3 +422,11 @@ Engine/.vs/
 Engine/Temp/
 
 Engine/Bin/Launcher_Debug.pdb
+
+Engine/Lib/Game_Debug.idb
+
+Engine/Lib/Game_Debug.pdb
+
+Engine/Lib/tga2dcore_Debug.idb
+
+Engine/Lib/tga2dcore_Debug.pdb

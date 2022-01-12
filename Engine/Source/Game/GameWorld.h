@@ -1,4 +1,9 @@
 #pragma once
+#include "EntityFactory.h"
+#include "EntityManager.h"
+
+#include <Input.h>
+#include <Timer.h>
 
 namespace Tga2D
 {
@@ -14,6 +19,16 @@ public:
 	void Init();
 	void Update(float aTimeDelta); 
 	void Render();
+
+	CommonUtilities::Input* GetUserInput();
+	CommonUtilities::Timer* GetTimeManager();
+
+	void SetUserInput(CommonUtilities::Input* anInputManager);
+	void SetTimeManager(CommonUtilities::Timer* anTimeManager);
+
 private:
-	Tga2D::CTexture* myTga2dLogoTexture;
+	CommonUtilities::Input* myUserInput;
+	CommonUtilities::Timer* myTimeManager;
+	EntityManager* myManager;
+	EntityFactory myFactory;
 };
